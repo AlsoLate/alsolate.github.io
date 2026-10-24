@@ -2,62 +2,74 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <!-- 防止移动端浏览器自动缩放 -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Minecraft 客户端时间线</title>
-  <link rel="stylesheet" href="styles.css?v=20261024f">
+  <title>亦迟 · 一个安静写字的人</title>
+  <meta name="description" content="亦迟（AlsoLate）的个人主页：写代码、写字，也做点小东西。">
+  <link rel="alternate" type="application/rss+xml" title="亦迟 RSS" href="feed.xml">
+  <link rel="stylesheet" href="css/style.css">
 </head>
-<body data-theme="minimal">
+<body>
 
   <header class="site-header">
-    <div>
-      <h1 class="site-title">Minecraft 客户端时间线</h1>
-      <p class="site-subtitle">各类客户端的发展历程。</p>
-    </div>
-
-    <div class="controls">
-      <div class="control-group">
-        <label class="control-label">视图</label>
-        <select id="view-mode">
-          <option value="graph">图谱</option>
-          <option value="horizontal">横向</option>
-          <option value="vertical">纵向</option>
-        </select>
+    <nav class="nav container">
+      <a class="brand" href="index.html">
+        <span class="brand-mark"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></span>
+        <span class="brand-cn">亦迟</span>
+        <span class="brand-en">ALSOLATE</span>
+      </a>
+      <div class="nav-links">
+        <a class="nav-link active" href="index.html">主页</a>
+        <a class="nav-link" href="articles.html">文章</a>
+        <a class="nav-link" href="projects.html">项目</a>
+        <a class="nav-link" href="about.html">关于</a>
+        <a class="nav-gh" href="https://github.com/alsolate" target="_blank" rel="noopener" aria-label="GitHub">
+          <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor"><path d="M12 .3C5.4.3 0 5.7 0 12.3c0 5.3 3.4 9.8 8.2 11.4.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.3-1.8-1.3-1.8-1.1-.8.1-.8.1-.8 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.7 1.3 3.4 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.2-1.3-5.2-5.7 0-1.3.4-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0c2.2-1.5 3.2-1.2 3.2-1.2.6 1.6.2 2.8.1 3.1.7.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.2 5.7.4.4.8 1.1.8 2.2v3.1c0 .3.2.7.8.6a12.3 12.3 0 0 0 8.2-11.4C24 5.7 18.6.3 12 .3z"/></svg>
+        </a>
+        <button class="theme-toggle" data-tip="切换主题"></button>
       </div>
-
-      <div class="control-group">
-        <label class="control-label">主题</label>
-        <select id="theme-select">
-          <option value="minimal">白色</option>
-          <option value="midnight">深色</option>
-          <option value="cyberpunk">赛博朋克</option>
-          <option value="retro">复古绿</option>
-        </select>
-      </div>
-
-      <div class="control-group">
-        <label class="control-label">排序</label>
-        <select id="sort-order">
-          <option value="desc">最新→最早</option>
-          <option value="asc">最早→最新</option>
-        </select>
-      </div>
-    </div>
+    </nav>
   </header>
 
   <main>
-    <!-- 时间线容器：卡片与引导线由 JS 注入，视图类名也由 JS 按屏幕尺寸设置 -->
-    <div id="timeline" class="timeline"></div>
+    <section class="landing">
+      <div class="landing-inner">
+        <div class="landing-me">
+          <div>
+            <div class="eyebrow reveal">亦迟 · AlsoLate · personal site</div>
+            <h1 class="name reveal reveal-1"><span id="typed">亦迟</span><span class="caret" aria-hidden="true">|</span></h1>
+            <p class="tagline reveal reveal-2">一个安静写字、认真做事的人。</p>
+            <p class="lead reveal reveal-3">
+              白天写代码，晚上写字、拍照。相信好东西都是慢慢磨出来的，
+              也相信简洁里藏着真诚。这里收藏我的文字与手艺，欢迎慢慢逛。
+            </p>
+          </div>
+          <div class="avatar-frame reveal reveal-2">
+            <img src="assets/avatar.jpg" alt="亦迟">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="container">
+      <div class="section-label">
+        <span class="t">最近写下的</span>
+        <a class="more" href="articles.html">全部文章 →</a>
+      </div>
+      <ul class="home-list" id="homeArticles"></ul>
+
+      <div class="section-label">
+        <span class="t">最近做的东西</span>
+        <a class="more" href="projects.html">全部项目 →</a>
+      </div>
+      <ul class="home-list" id="homeProjects"></ul>
+    </section>
   </main>
 
-  <div id="zoom-badge" class="zoom-badge" aria-hidden="true"></div>
-
   <footer class="site-footer">
-    <p>时间线数据源：<a href="https://github.com/CheatCracker/CheatCracker.github.io/blob/main/timeline.json">timeline.json</a> —— 编辑该文件即可更新时间线。</p>
-    <p class="footer-note">反作弊：2b2t.org 自 1.19 起为 GrimAC（此前 NCP）｜2b2t.xin 为 NCP魔改版｜3c3u.org 自 2024.5 起为 GrimAC v3 魔改版（此前 NCP）</p>
+    <p>© <span id="year"></span> 亦迟 / AlsoLate · <a href="feed.xml">RSS</a></p>
   </footer>
 
-  <script src="ui.js?v=20261024f"></script>
-  <script src="script.js?v=20261024f"></script>
+  <script src="js/main.js"></script>
+  <script src="js/home.js"></script>
 </body>
 </html>
