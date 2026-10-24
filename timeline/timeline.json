@@ -591,15 +591,15 @@
     "id": "tcp",
     "name": "TCP Client",
     "anticheat": "NCP",
-    "description": "2b2t.xin 的 1.21.1 客户端，基于 frog 二次开发，预售 50 元。",
+    "description": "2b2t.xin 的 1.21.1 客户端，基于 frog 魔改。",
     "month": 10,
     "year": 2026,
     "color": "#A879BE",
     "platform": "Minecraft 1.21.1",
-    "license": "付费（预售 50 元）",
+    "license": "付费",
     "status": "持续维护",
     "base": "frog",
-    "story": "面向 2b2t.xin 的 1.21.1 版本客户端，基于 frog 二次开发，预售价格 50 元，目前持续维护。"
+    "story": "面向 2b2t.xin 的 1.21.1 版本客户端，基于 frog 魔改，目前持续维护。"
   },
   {
     "id": "kimi",
