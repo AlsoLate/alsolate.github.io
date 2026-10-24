@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>客户端详情 — Minecraft 客户端时间线</title>
+  <link rel="stylesheet" href="styles.css?v=20261024f">
+  <link rel="stylesheet" href="client.css?v=20261024f">
+</head>
+<body data-theme="minimal">
+
+  <header class="site-header">
+    <div>
+      <h1 class="site-title">Minecraft 客户端时间线</h1>
+      <p class="site-subtitle">各类客户端的发展历程。</p>
+    </div>
+
+    <div class="controls">
+      <div class="control-group">
+        <label class="control-label">视图</label>
+        <select id="view-mode">
+          <option value="graph">图谱</option>
+          <option value="horizontal">横向</option>
+          <option value="vertical">纵向</option>
+        </select>
+      </div>
+
+      <div class="control-group">
+        <label class="control-label">主题</label>
+        <select id="theme-select">
+          <option value="minimal">白色</option>
+          <option value="midnight">深色</option>
+          <option value="cyberpunk">赛博朋克</option>
+          <option value="retro">复古绿</option>
+        </select>
+      </div>
+
+      <div class="control-group">
+        <label class="control-label">排序</label>
+        <select id="sort-order">
+          <option value="desc">最新→最早</option>
+          <option value="asc">最早→最新</option>
+        </select>
+      </div>
+    </div>
+
+    <a class="back-link" href="index.html">← 返回时间线</a>
+  </header>
+
+  <main class="detail-main">
+    <!-- 详情内容由 client.js 注入 -->
+    <article class="detail" id="detail"></article>
+  </main>
+
+  <footer class="site-footer">
+    <p>时间线数据源：<a href="https://github.com/CheatCracker/CheatCracker.github.io/blob/main/timeline.json">timeline.json</a> —— 编辑该文件即可更新时间线。</p>
+    <p class="footer-note">反作弊：2b2t.org 自 1.19 起为 GrimAC（此前 NCP）｜2b2t.xin 为 NCP魔改版｜3c3u.org 自 2024.5 起为 GrimAC v3 魔改版（此前 NCP）</p>
+  </footer>
+
+  <script src="ui.js?v=20261024f"></script>
+  <script src="client.js?v=20261024f"></script>
+</body>
+</html>

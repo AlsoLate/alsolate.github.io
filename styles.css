@@ -1,0 +1,589 @@
+/* styles.css —— 时间线主题与布局 */
+
+:root {
+  --font-body: 'Inter', ui-sans-serif, system-ui, 'Microsoft YaHei', 'PingFang SC', 'Noto Sans SC', sans-serif;
+  --card-radius: 14px;
+}
+
+/* ==================== 主题 ==================== */
+
+/* 极简（默认，浅色） */
+body,
+body[data-theme="minimal"] {
+  --bg-grad: #f6f7f9;
+  --bg-solid: #ffffff;
+  --text-main: #16181d;
+  --text-muted: #767d8a;
+  --card-bg: #ffffff;
+  --card-border: #e5e7eb;
+  --accent: #16181d;
+  --accent-glow: rgba(16, 24, 40, 0.10);
+  --guide-line: #d6dae1;
+  --guide-grid: #eef0f3;
+  --guide-node: #b7bdc8;
+  --guide-label: #9ba2ae;
+  --header-bg: rgba(255, 255, 255, 0.78);
+  --shadow: 0 1px 2px rgba(16, 24, 40, 0.05), 0 10px 24px rgba(16, 24, 40, 0.06);
+  --shadow-hover: 0 6px 16px rgba(16, 24, 40, 0.10), 0 18px 44px rgba(16, 24, 40, 0.09);
+  --font-body: 'Inter', ui-sans-serif, system-ui, 'Microsoft YaHei', 'PingFang SC', 'Noto Sans SC', sans-serif;
+  color-scheme: light;
+}
+
+/* 午夜蓝（原深蓝玻璃主题） */
+body[data-theme="midnight"] {
+  --bg-grad: radial-gradient(1200px 600px at 20% -10%, #17253b 0%, transparent 60%), linear-gradient(180deg, #0f1724 0%, #071026 100%);
+  --bg-solid: #0b1320;
+  --text-main: #e6eef8;
+  --text-muted: #93a5c0;
+  --card-bg: rgba(13, 22, 36, 0.88);
+  --card-border: rgba(255, 255, 255, 0.09);
+  --accent: #4f9cff;
+  --accent-glow: rgba(79, 156, 255, 0.28);
+  --guide-line: rgba(255, 255, 255, 0.17);
+  --guide-grid: rgba(255, 255, 255, 0.05);
+  --guide-node: #4f9cff;
+  --guide-label: #6d7f9b;
+  --header-bg: rgba(7, 16, 38, 0.6);
+  --shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  --shadow-hover: 0 14px 44px rgba(0, 0, 0, 0.6);
+  --font-body: 'Inter', ui-sans-serif, system-ui, 'Microsoft YaHei', 'PingFang SC', 'Noto Sans SC', sans-serif;
+  color-scheme: dark;
+}
+
+/* 赛博朋克 */
+body[data-theme="cyberpunk"] {
+  --bg-grad: repeating-linear-gradient(0deg,
+      transparent 0,
+      transparent 2px,
+      rgba(255, 0, 255, 0.045) 2px,
+      rgba(255, 0, 255, 0.045) 4px),
+    linear-gradient(to bottom, #050011, #120024);
+  --bg-solid: #0a0a12;
+  --text-main: #00f3ff;
+  --text-muted: #ff7bff;
+  --card-bg: rgba(8, 8, 16, 0.92);
+  --card-border: rgba(0, 243, 255, 0.5);
+  --accent: #ff00ff;
+  --accent-glow: rgba(0, 243, 255, 0.35);
+  --guide-line: rgba(0, 243, 255, 0.45);
+  --guide-grid: rgba(255, 0, 255, 0.14);
+  --guide-node: #ff00ff;
+  --guide-label: #00f3ff;
+  --header-bg: rgba(5, 0, 17, 0.7);
+  --card-radius: 2px;
+  --shadow: 0 0 16px rgba(0, 243, 255, 0.22);
+  --shadow-hover: 0 0 28px rgba(255, 0, 255, 0.45);
+  --font-body: 'Courier New', 'Microsoft YaHei', 'PingFang SC', monospace;
+  color-scheme: dark;
+}
+
+/* 复古 */
+body[data-theme="retro"] {
+  --bg-grad: #000000;
+  --bg-solid: #001100;
+  --text-main: #33ff33;
+  --text-muted: #22aa22;
+  --card-bg: #001100;
+  --card-border: #1c7a1c;
+  --accent: #33ff33;
+  --accent-glow: rgba(51, 255, 51, 0.2);
+  --guide-line: #22aa22;
+  --guide-grid: rgba(51, 255, 51, 0.12);
+  --guide-node: #33ff33;
+  --guide-label: #22aa22;
+  --header-bg: #000000;
+  --card-radius: 0px;
+  --shadow: none;
+  --shadow-hover: none;
+  /* 字体未加载时回退到等宽字体 */
+  --font-body: 'Press Start 2P', 'Microsoft YaHei', 'PingFang SC', 'Courier New', monospace;
+  color-scheme: dark;
+}
+
+/* ==================== 基础 ==================== */
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: var(--bg-grad);
+  color: var(--text-main);
+  font-family: var(--font-body);
+  display: flex;
+  flex-direction: column;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* 页头 */
+.site-header {
+  padding: 18px 40px;
+  border-bottom: 1px solid var(--card-border);
+  background: var(--header-bg);
+  backdrop-filter: blur(10px);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px 28px;
+  z-index: 100;
+}
+
+.site-title {
+  font-size: 1.3rem;
+  margin: 0;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.site-subtitle {
+  color: var(--text-muted);
+  margin: 4px 0 0;
+  font-size: 0.85rem;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.control-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.control-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+/* 原生 select：JS 增强后会被隐藏，仅在禁用 JS 时作为降级控件显示 */
+select {
+  background: var(--card-bg);
+  color: var(--text-main);
+  border: 1px solid var(--card-border);
+  padding: 7px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.85rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+select:hover,
+select:focus-visible {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+  outline: none;
+}
+
+/* ---------- 自定义下拉（与主题风格统一） ---------- */
+
+.dd {
+  position: relative;
+  display: inline-block;
+}
+
+/* 隐藏原生控件，但保留其值与 change 事件语义 */
+.dd-native {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  opacity: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.dd-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  min-width: 112px;
+  padding: 7px 10px 7px 12px;
+  background: var(--card-bg);
+  color: var(--text-main);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  cursor: pointer;
+  transition: border-color 0.18s, box-shadow 0.18s;
+}
+
+.dd-trigger:hover {
+  border-color: var(--guide-node);
+}
+
+.dd[data-open="true"] .dd-trigger,
+.dd-trigger:focus-visible {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+  outline: none;
+}
+
+.dd-value {
+  white-space: nowrap;
+}
+
+.dd-caret {
+  width: 10px;
+  height: 10px;
+  flex: 0 0 auto;
+  color: var(--text-muted);
+  transition: transform 0.18s ease;
+}
+
+.dd[data-open="true"] .dd-caret {
+  transform: rotate(180deg);
+}
+
+.dd-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 200;
+  min-width: 100%;
+  margin: 0;
+  padding: 4px;
+  list-style: none;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  box-shadow: var(--shadow-hover);
+  display: none;
+}
+
+.dd[data-open="true"] .dd-menu {
+  display: block;
+}
+
+.dd-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  color: var(--text-main);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 0.12s;
+}
+
+.dd-option::before {
+  content: '✓';
+  flex: 0 0 10px;
+  font-size: 0.7rem;
+  color: var(--accent);
+  opacity: 0;
+}
+
+.dd-option[aria-selected="true"] {
+  background: var(--guide-grid);
+  font-weight: 600;
+}
+
+.dd-option[aria-selected="true"]::before {
+  opacity: 1;
+}
+
+.dd-option:hover,
+.dd-option.is-active {
+  background: var(--accent-glow);
+}
+
+/* ==================== 时间线画布 ==================== */
+
+main {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+}
+
+.timeline {
+  position: absolute;
+  inset: 0;
+  overflow: auto;
+  /* 不用滚动条，改为按住拖动平移 */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  cursor: grab;
+  /* 允许单指平移，双指捏合交给脚本处理（否则会被浏览器页面缩放吃掉） */
+  touch-action: pan-x pan-y;
+}
+
+/* 捏合缩放时的百分比提示 */
+.zoom-badge {
+  position: fixed;
+  left: 50%;
+  bottom: 28px;
+  transform: translate(-50%, 8px);
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--shadow);
+  color: var(--text-main);
+  font-size: 0.78rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 300;
+}
+
+.zoom-badge.is-visible {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.timeline::-webkit-scrollbar {
+  display: none;
+}
+
+.timeline.is-dragging {
+  cursor: grabbing;
+  user-select: none;
+}
+
+.track {
+  position: relative;
+}
+
+/* ==================== 引导线（SVG） ==================== */
+
+.guides {
+  position: absolute;
+  left: 0;
+  top: 0;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.guides .axis,
+.guides .spine {
+  stroke: var(--guide-line);
+  stroke-width: 2;
+  stroke-linecap: round;
+  fill: none;
+}
+
+.guides .grid {
+  stroke: var(--guide-grid);
+  stroke-width: 1;
+  stroke-dasharray: 2 8;
+}
+
+.guides .stem {
+  stroke: var(--guide-line);
+  stroke-width: 1.5;
+  fill: none;
+}
+
+.guides .node {
+  fill: var(--bg-solid);
+  stroke: var(--guide-node);
+  stroke-width: 2;
+}
+
+.guides .year-label {
+  fill: var(--guide-label);
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  /* 描边与背景同色，让标签压在引导线上时依然清晰 */
+  paint-order: stroke;
+  stroke: var(--bg-solid);
+  stroke-width: 3px;
+  stroke-linejoin: round;
+}
+
+/* ==================== 事件卡片 ==================== */
+
+.event {
+  position: absolute;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--card-radius);
+  padding: 16px 18px 18px;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 1;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+}
+
+.event:hover,
+.event:focus-visible {
+  transform: translateY(-3px);
+  border-color: var(--accent);
+  box-shadow: var(--shadow-hover);
+  outline: none;
+  z-index: 3;
+}
+
+.event-date {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+}
+
+/* 反作弊标签 */
+.event-tag {
+  padding: 1px 7px;
+  border-radius: 999px;
+  border: 1px solid var(--card-border);
+  background: var(--guide-grid);
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.event-title {
+  font-size: 1rem;
+  margin: 0;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--accent);
+}
+
+.event-desc {
+  font-size: 0.84rem;
+  line-height: 1.75;
+  color: var(--text-main);
+  opacity: 0.78;
+  margin: 0;
+}
+
+/* 图谱视图信息密度高，卡片更紧凑，描述最多显示 4 行 */
+.timeline.view-graph .event {
+  padding: 13px 15px 15px;
+}
+
+.timeline.view-graph .event-desc {
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ==================== 提示信息 ==================== */
+
+.message {
+  margin: 80px auto;
+  max-width: 620px;
+  padding: 22px 26px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--card-radius);
+  box-shadow: var(--shadow);
+  font-size: 0.88rem;
+  line-height: 1.85;
+}
+
+.message code {
+  background: var(--guide-grid);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.85em;
+}
+
+.message.error {
+  border-color: #e5484d;
+  color: #e5484d;
+}
+
+/* ==================== 页脚 ==================== */
+
+.site-footer {
+  text-align: center;
+  padding: 10px;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  border-top: 1px solid var(--card-border);
+  background: var(--header-bg);
+}
+
+.site-footer p {
+  margin: 0;
+}
+
+.site-footer .footer-note {
+  margin-top: 2px;
+  opacity: 0.75;
+}
+
+.site-footer code {
+  font-size: 0.95em;
+}
+
+/* ==================== 响应式 ==================== */
+
+@media (max-width: 768px) {
+  .site-header {
+    padding: 16px 20px;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .controls {
+    width: 100%;
+    gap: 10px 12px;
+  }
+
+  /* 两列排布，避免控件把页面撑宽 */
+  .control-group {
+    flex: 1 1 45%;
+    min-width: 0;
+  }
+
+  .control-label {
+    flex: 0 0 auto;
+  }
+
+  .dd {
+    width: 100%;
+  }
+
+  .dd-trigger {
+    width: 100%;
+    min-width: 0;
+  }
+
+  select {
+    width: 100%;
+    min-width: 0;
+  }
+}
