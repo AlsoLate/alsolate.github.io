@@ -447,8 +447,10 @@ function renderTimeline() {
   paint(layout, cards);
 
   // 图谱视图内容较高，初始滚动到时间轴所在的纵向中心
+  // 注意：scrollTop 是缩放后的视觉像素，而 focusY 是画布内的布局坐标，
+  // 所以要乘上 zoom 才能对得上（zoom=1 时两者相等）
   if (layout.focusY) {
-    setScroll({ top: Math.max(0, layout.focusY - timelineEl.clientHeight / 2) });
+    setScroll({ top: Math.max(0, layout.focusY * zoom - timelineEl.clientHeight / 2) });
   }
 }
 
@@ -578,8 +580,9 @@ function enableDragPan(el) {
   }, true);
 
   // 横向视图没有纵向滚动条，把滚轮映射到横向
+  // Ctrl / Meta 组合留给缩放处理，这里必须放行
   el.addEventListener('wheel', (e) => {
-    if (currentView !== 'horizontal' || e.ctrlKey) return;
+    if (currentView !== 'horizontal' || e.ctrlKey || e.metaKey) return;
     const delta = Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
     if (!delta) return;
     e.preventDefault();
@@ -589,7 +592,7 @@ function enableDragPan(el) {
 
 enableDragPan(timelineEl);
 
-/* ---------------- 双指捏合缩放（移动端） ---------------- */
+/* ---------------- 缩放：PC 端 Ctrl+滚轮 / 控件按钮，移动端双指捏合 ---------------- */
 
 const ZOOM_MIN = 0.5;
 const ZOOM_MAX = 2.5;
@@ -602,6 +605,7 @@ let zoom = (() => {
 
 const zoomBadge = document.getElementById('zoom-badge');
 let badgeTimer = null;
+let zoomCtl = null;   // 头部缩放控件，声明在 applyZoom 之前以免 TDZ
 
 function showZoomBadge() {
   if (!zoomBadge) return;
@@ -611,7 +615,8 @@ function showZoomBadge() {
   badgeTimer = setTimeout(() => zoomBadge.classList.remove('is-visible'), 900);
 }
 
-// 以 (focalX, focalY) 为中心缩放，保证手指下的内容不跑位
+// 以 (focalX, focalY) 为中心缩放，保证手指／光标下的内容不跑位
+// focalX / focalY 是相对于时间线视口左上角的像素坐标
 function applyZoom(next, focalX, focalY) {
   if (!track) return;
   next = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, next));
@@ -628,7 +633,41 @@ function applyZoom(next, focalX, focalY) {
 
   localStorage.setItem(ZOOM_KEY, String(zoom));
   showZoomBadge();
+  if (zoomCtl) zoomCtl.sync();
 }
+
+// 头部缩放控件：缩放时以视口中心为锚点
+zoomCtl = createZoomControl({
+  min: ZOOM_MIN,
+  max: ZOOM_MAX,
+  get: () => zoom,
+  set: (v) => {
+    const rect = timelineEl.getBoundingClientRect();
+    applyZoom(v, timelineEl.clientWidth / 2, timelineEl.clientHeight / 2);
+  }
+});
+
+const zoomHost = document.getElementById('zoom-control');
+if (zoomHost) {
+  zoomHost.appendChild(zoomCtl.el);
+  zoomCtl.sync();
+}
+
+/* PC 端：Ctrl + 滚轮缩放（以光标位置为锚点） */
+timelineEl.addEventListener('wheel', (e) => {
+  if (!e.ctrlKey && !e.metaKey) return;   // 普通滚轮仍用于滚动／横向平移
+  e.preventDefault();
+
+  const rect = timelineEl.getBoundingClientRect();
+  const focalX = e.clientX - rect.left;
+  const focalY = e.clientY - rect.top;
+
+  // deltaY 为负表示向上滚（放大），这里取反让方向符合直觉
+  const factor = Math.pow(1.0015, -e.deltaY);
+  applyZoom(zoom * factor, focalX, focalY);
+}, { passive: false });
+
+/* 移动端：双指捏合缩放 */
 
 let pinchDist = 0;
 let pinchBaseZoom = 1;
@@ -660,6 +699,22 @@ timelineEl.addEventListener('touchend', (e) => {
 }, { passive: true });
 
 timelineEl.addEventListener('touchcancel', () => { pinchDist = 0; }, { passive: true });
+
+/* 键盘快捷键：+ 放大、- 缩小、0 复位（输入框内不拦截） */
+document.addEventListener('keydown', (e) => {
+  const tag = (e.target && e.target.tagName || '').toLowerCase();
+  if (tag === 'input' || tag === 'textarea' || tag === 'select' || e.target.isContentEditable) return;
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+
+  let next = null;
+  if (e.key === '+' || e.key === '=') next = zoom * 1.25;
+  else if (e.key === '-' || e.key === '_') next = zoom / 1.25;
+  else if (e.key === '0') next = 1;
+  if (next === null) return;
+
+  e.preventDefault();
+  applyZoom(next, timelineEl.clientWidth / 2, timelineEl.clientHeight / 2);
+});
 
 /* ---------------- 事件绑定 ---------------- */
 
