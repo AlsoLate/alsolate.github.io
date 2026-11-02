@@ -52,6 +52,65 @@ themeSel.addEventListener('change', (e) => {
 viewSel.addEventListener('change', (e) => localStorage.setItem(VIEW_KEY, e.target.value));
 sortSel.addEventListener('change', (e) => localStorage.setItem(SORT_KEY, e.target.value));
 
+/* ---------------- 缩放（正文缩放，与首页时间线缩放分开存储） ---------------- */
+
+const ZOOM_MIN = 0.75;
+const ZOOM_MAX = 2.0;
+const ZOOM_KEY = 'timeline-detail-zoom';
+
+let detailZoom = (() => {
+  const saved = Number(localStorage.getItem(ZOOM_KEY));
+  return (saved >= ZOOM_MIN && saved <= ZOOM_MAX) ? saved : 1;
+})();
+
+function applyDetailZoom(v) {
+  detailZoom = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, v));
+  root.style.zoom = detailZoom;
+  localStorage.setItem(ZOOM_KEY, String(detailZoom));
+}
+
+const zoomHost = document.getElementById('zoom-control');
+if (zoomHost) {
+  const ctl = createZoomControl({
+    min: ZOOM_MIN,
+    max: ZOOM_MAX,
+    get: () => detailZoom,
+    set: applyDetailZoom
+  });
+  zoomHost.appendChild(ctl.el);
+  ctl.sync();
+}
+
+// 立即把已保存的缩放应用到 DOM。root 的内联样式不会被后续的 innerHTML 渲染覆盖，
+// 所以刷新页面后正文缩放能自动恢复。
+root.style.zoom = detailZoom;
+
+/* Ctrl + 滚轮缩放正文 */
+const detailMain = document.querySelector('.detail-main');
+if (detailMain) {
+  detailMain.addEventListener('wheel', (e) => {
+    if (!e.ctrlKey && !e.metaKey) return;
+    e.preventDefault();
+    applyDetailZoom(detailZoom * Math.pow(1.0015, -e.deltaY));
+  }, { passive: false });
+}
+
+/* 键盘快捷键：+ 放大、- 缩小、0 复位 */
+document.addEventListener('keydown', (e) => {
+  const tag = (e.target && e.target.tagName || '').toLowerCase();
+  if (tag === 'input' || tag === 'textarea' || tag === 'select' || e.target.isContentEditable) return;
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+
+  let next = null;
+  if (e.key === '+' || e.key === '=') next = detailZoom * 1.25;
+  else if (e.key === '-' || e.key === '_') next = detailZoom / 1.25;
+  else if (e.key === '0') next = 1;
+  if (next === null) return;
+
+  e.preventDefault();
+  applyDetailZoom(next);
+});
+
 /* ---------------- 工具 ---------------- */
 
 function make(tag, className, text) {
