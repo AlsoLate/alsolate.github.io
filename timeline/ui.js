@@ -1,4 +1,4 @@
-/* ui.js —— 两个页面共用的自定义下拉组件（原生 select 的弹层无法用 CSS 定制） */
+/* ui.js —— 两个页面共用的界面组件（自定义下拉、缩放控件） */
 
 const CARET_SVG = '<svg class="dd-caret" viewBox="0 0 10 10" aria-hidden="true">'
   + '<path d="M2 3.8 L5 6.8 L8 3.8" fill="none" stroke="currentColor" '
@@ -124,4 +124,54 @@ function enhanceSelect(sel) {
   sync();
 
   return { sync };
+}
+
+/* ---------------- 缩放控件（两个页面共用） ---------------- */
+
+/**
+ * 创建一个「－ 百分比 ＋」的缩放控件。
+ * get() 返回当前缩放比，set(v) 负责应用（由调用方决定如何保持视口锚点）。
+ * 返回 { el, sync }，sync() 用于外部状态变化后刷新显示。
+ */
+function createZoomControl({ min = 0.5, max = 2.5, factor = 1.25, get, set }) {
+  const wrap = document.createElement('div');
+  wrap.className = 'zoom-ctrl';
+
+  const btnOut = document.createElement('button');
+  btnOut.type = 'button';
+  btnOut.className = 'zoom-btn';
+  btnOut.dataset.dir = 'out';
+  btnOut.setAttribute('aria-label', '缩小');
+  btnOut.textContent = '−';
+
+  const val = document.createElement('button');
+  val.type = 'button';
+  val.className = 'zoom-val';
+  val.title = '点击重置为 100%';
+
+  const btnIn = document.createElement('button');
+  btnIn.type = 'button';
+  btnIn.className = 'zoom-btn';
+  btnIn.dataset.dir = 'in';
+  btnIn.setAttribute('aria-label', '放大');
+  btnIn.textContent = '＋';
+
+  const clamp = (v) => Math.min(max, Math.max(min, v));
+
+  function sync() {
+    const v = get();
+    val.textContent = `${Math.round(v * 100)}%`;
+    btnOut.disabled = v <= min + 1e-6;
+    btnIn.disabled = v >= max - 1e-6;
+  }
+
+  btnOut.addEventListener('click', () => { set(clamp(get() / factor)); sync(); });
+  btnIn.addEventListener('click', () => { set(clamp(get() * factor)); sync(); });
+  val.addEventListener('click', () => { set(1); sync(); });
+
+  wrap.appendChild(btnOut);
+  wrap.appendChild(val);
+  wrap.appendChild(btnIn);
+
+  return { el: wrap, sync };
 }
