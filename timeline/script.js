@@ -530,6 +530,13 @@ function enableDragPan(el) {
   let startX = 0, startY = 0, startLeft = 0, startTop = 0;
   let suppressUntil = 0;
 
+  // 清掉当前选区：双击选词后如果继续拖动，选区会一路扩到卡片外面，
+  // 最终变成整页选中。拖动和选择是互斥的两种意图。
+  function clearSelection() {
+    const sel = window.getSelection();
+    if (sel && !sel.isCollapsed) sel.removeAllRanges();
+  }
+
   el.addEventListener('pointerdown', (e) => {
     if (e.pointerType === 'touch') return;  // 触摸交给浏览器原生滚动
     if (e.button !== 0) return;
@@ -539,6 +546,7 @@ function enableDragPan(el) {
     startY = e.clientY;
     startLeft = el.scrollLeft;
     startTop = el.scrollTop;
+    clearSelection();
   });
 
   el.addEventListener('pointermove', (e) => {
@@ -551,6 +559,7 @@ function enableDragPan(el) {
       moved = true;
       el.classList.add('is-dragging');
       try { el.setPointerCapture(e.pointerId); } catch (err) { /* 忽略 */ }
+      clearSelection();
     }
 
     el.scrollLeft = startLeft - dx;
@@ -566,10 +575,17 @@ function enableDragPan(el) {
       suppressUntil = Date.now() + 250;
     }
     moved = false;
+    clearSelection();
   }
 
   el.addEventListener('pointerup', endDrag);
   el.addEventListener('pointercancel', endDrag);
+
+  // 双击时清掉浏览器原生选中的词，避免出现"选到了但又跨框"的怪异状态
+  el.addEventListener('dblclick', (e) => {
+    e.preventDefault();
+    clearSelection();
+  });
 
   // 捕获阶段拦截拖动后的那次点击
   el.addEventListener('click', (e) => {

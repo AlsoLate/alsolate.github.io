@@ -327,6 +327,12 @@ main {
   cursor: grab;
   /* 允许单指平移，双指捏合交给脚本处理（否则会被浏览器页面缩放吃掉） */
   touch-action: pan-x pan-y;
+  /* 画布是拖拽平移区，不是阅读区：整体禁止选中，
+     否则双击空白处会触发浏览器原生选词，再拖动就会一路扩到卡片外，
+     最终变成整页选中。卡片本身是链接（单击即进入详情页），
+     需要复制正文时到详情页复制即可。 */
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 /* 捏合缩放时的百分比提示 */
@@ -362,7 +368,6 @@ main {
 
 .timeline.is-dragging {
   cursor: grabbing;
-  user-select: none;
 }
 
 .track {
