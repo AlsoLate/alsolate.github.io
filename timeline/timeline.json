@@ -574,18 +574,19 @@
   },
   {
     "id": "reverie",
-    "name": "Reverie hack",
+    "name": "Reverie",
     "anticheat": "NCP",
-    "description": "2b2t.xin 的 26.2 客户端，基于 Alien 二次开发，作者 7XED。",
+    "aliases": ["Perish-Hyperion", "Reverie hack"],
+    "description": "2b2t.xin 的客户端，分 1.21.1、1.21.11、26.2 三个版本，前身是 Hex（Hex-Tech）。",
     "month": 7,
     "year": 2026,
     "color": "#A879BE",
     "developer": "7XED",
-    "platform": "Minecraft 26.2",
+    "platform": "Minecraft 1.21.1 / 1.21.11 / 26.2",
     "license": "付费（预售 85 元，正式 150 元）",
-    "status": "持续维护",
-    "base": "Alien",
-    "story": "面向 2b2t.xin 的 26.2 版本客户端，基于 Alien 二次开发，作者为 7XED。预售阶段 85 元，正式发布后回调到 150 元，目前持续维护。"
+    "status": "多次跑路，无长期支持",
+    "base": "Hex（Hex-Tech）",
+    "story": "面向 2b2t.xin 的客户端，前身是 Hex（即 Hex-Tech）。目前分为 1.21.1、1.21.11 与 26.2 三个版本，其中 1.21.1 版本的名字叫 Perish-Hyperion。Hex-Tech 跑路之后，只有部分用户选择加钱升级到 Reverie。需要特别注明的是：作者 7XED 已多次跑路，属于纯圈钱性质，无法提供长期支持，付费前需自行评估风险。"
   },
   {
     "id": "tcp",
@@ -655,7 +656,7 @@
     "year": 2026,
     "color": "#A879BE",
     "license": "付费（永久 70 / 月卡 20；拿卡价 永久 60 / 月卡 20）",
-    "developer": "哈哈1",
+    "developer": "哈哈1（1414455762）",
     "story": "插件（addon）而非独立客户端，2026 年 6 月发布，作者为哈哈1，采用「打滑洋葱」验证系统。2026 年 10 月官方把永久版价格下调到 70 元，月卡维持 20 元；拿卡价（渠道价）为永久 60 元、月卡 20 元。同期作者开启了独立客户端 Mx Plus 的预售。"
   },
   {
@@ -784,13 +785,14 @@
   {
     "id": "hex-tech",
     "name": "Hex-Tech",
-    "description": "2026 年 7 月出现的付费客户端。",
+    "description": "2026 年 7 月出现的付费客户端，后跑路，是 Reverie 的前身。",
     "month": 7,
     "year": 2026,
     "color": "#A879BE",
     "license": "付费",
+    "status": "已跑路",
     "platform": "Minecraft 1.20.4（Fabric）",
-    "story": "2026 年 7 月出现的付费客户端。论坛整合帖里出现过 HEX-7，标注为「低混淆开发版」，面向 1.20.4、依赖 Fabric 与 Fabric API。开发者与价格暂未查到。"
+    "story": "2026 年 7 月出现的付费客户端。论坛整合帖里出现过 HEX-7，标注为「低混淆开发版」，面向 1.20.4、依赖 Fabric 与 Fabric API。该客户端后来跑路，是 Reverie 的前身；跑路之后只有部分用户选择加钱升级到后继的 Reverie。"
   },
   {
     "id": "apex",
@@ -962,5 +964,52 @@
     "status": "预售中",
     "features": ["继承 mx addon 的全部功能", "修复卡手等疑难问题", "重写渲染"],
     "story": "mx addon 作者推出的独立客户端，2026 年 10 月开启预售，面向 Minecraft 1.21.11。目标是「拥有 mx addon 的强力功能、优化卡手等疑难杂症、重写渲染」。定价分两档：已有 mx addon 的用户预售 30 元（正式 60 元），非 mx 用户预售 60 元（正式 90 元）。预售阶段暂不设优化拿卡价，代理可以自行定价，不必按官方价走。"
+  },
+  {
+    "id": "siesta",
+    "name": "Siesta",
+    "anticheat": "未知",
+    "description": "2026 年 11 月出现的客户端，售价 20 元，部分战斗模块与 GUI 界面为作者自写。",
+    "month": 11,
+    "year": 2026,
+    "color": "#A879BE",
+    "developer": "sakana（3690812160）",
+    "license": "付费（20 元）",
+    "status": "新上线",
+    "features": ["部分战斗模块自写", "GUI 界面自写"],
+    "story": "2026 年 11 月上线的客户端，售价 20 元，作者为 sakana（QQ 3690812160）。它的特点是部分战斗模块与 GUI 界面由作者自行编写，而不是完全套用现成底子。目前公开资料有限，适配的反作弊与具体功能范围尚未见明确记载。"
+  },
+  {
+    "id": "vertex",
+    "name": "Vertex",
+    "anticheat": "多种反作弊",
+    "description": "作者 Vertex1337 的客户端，重锤与渲染为自写模块，支持多种反作弊。",
+    "year": 2026,
+    "color": "#A879BE",
+    "developer": "Vertex1337（139997070）",
+    "features": ["重锤模块自写", "渲染模块自写", "支持多种反作弊"],
+    "story": "作者为 Vertex1337（QQ 139997070）的客户端。重锤与渲染两块内容由作者自行编写，同时支持多种反作弊方案，属于自研比例较高的类型。具体上线时间与价格暂未查到。"
+  },
+  {
+    "id": "kak-client",
+    "name": "Kak Client",
+    "anticheat": "未知",
+    "description": "2026 年 10 月出现的客户端，作者 BALISONG。",
+    "month": 10,
+    "year": 2026,
+    "color": "#A879BE",
+    "developer": "BALISONG（3767838069）",
+    "status": "新上线",
+    "story": "2026 年 10 月出现的客户端，作者为 BALISONG（QQ 3767838069）。目前公开资料较少，具体功能、价格与官方渠道暂未查到。"
+  },
+  {
+    "id": "prism",
+    "name": "Prism",
+    "anticheat": "未知",
+    "description": "2025 年出现的客户端，作者 5k1d。",
+    "year": 2025,
+    "color": "#A879BE",
+    "developer": "5k1d",
+    "story": "2025 年出现的客户端，作者为 5k1d。具体上线月份、版本、价格与官方渠道暂未查到。"
   }
 ]
