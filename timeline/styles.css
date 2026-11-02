@@ -498,6 +498,66 @@ main {
   overflow: hidden;
 }
 
+/* ==================== 缩放控件 ==================== */
+
+.zoom-ctrl {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  background: var(--card-bg);
+  overflow: hidden;
+}
+
+.zoom-btn {
+  width: 30px;
+  height: 30px;
+  border: 0;
+  background: transparent;
+  color: var(--text-main);
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 0.16s, color 0.16s;
+}
+
+.zoom-btn:hover:not(:disabled),
+.zoom-btn:focus-visible {
+  background: var(--accent-glow);
+  outline: none;
+}
+
+.zoom-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+/* 中间的百分比，点一下回到 100% */
+.zoom-val {
+  min-width: 52px;
+  height: 30px;
+  padding: 0 6px;
+  border: 0;
+  border-left: 1px solid var(--card-border);
+  border-right: 1px solid var(--card-border);
+  background: transparent;
+  color: var(--text-main);
+  font-family: inherit;
+  font-size: 0.76rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: background-color 0.16s;
+}
+
+.zoom-val:hover,
+.zoom-val:focus-visible {
+  background: var(--accent-glow);
+  outline: none;
+}
+
 /* ==================== 提示信息 ==================== */
 
 .message {
