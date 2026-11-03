@@ -628,14 +628,23 @@
   },
   {
     "id": "lalahack",
-    "name": "LaLahack",
+    "name": "LalaClient",
+    "aliases": ["LaLahack"],
     "anticheat": "NCP",
-    "description": "基于 Alien 的 2b2t.xin 客户端，2026 年 10 月出现。",
+    "description": "基于 Alien 的 2b2t.xin 客户端，2026 年 10 月出现，售价 65 元。渲染、水晶与重锤模块为作者自写。",
     "month": 10,
     "year": 2026,
     "color": "#A879BE",
     "base": "Alien",
-    "story": "基于 Alien 二次开发，2026 年 10 月出现。开发者、价格与官方渠道暂未查到。"
+    "developer": "大喵见小喵（3276259179）",
+    "license": "付费（65 元）",
+    "status": "活跃",
+    "features": [
+      "渲染模块自写",
+      "水晶模块自写",
+      "重锤模块自写"
+    ],
+    "story": "基于 Alien 二次开发的 2b2t.xin 客户端，2026 年 10 月出现，作者为大喵见小喵（QQ 3276259179），售价 65 元。它的渲染、水晶与重锤模块由作者自行编写，而非完全沿用底座的现成实现。"
   },
   {
     "id": "ardelia",
