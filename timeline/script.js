@@ -24,6 +24,7 @@ const L = {
 let events = [];
 let track = null;   // 承载卡片与引导线的画布
 let guides = null;  // SVG 引导线层
+let cardMap = new Map();  // id → 卡片元素，供搜索定位
 
 /* 自定义下拉组件已抽到 ui.js，两个页面共用 */
 
@@ -142,6 +143,7 @@ function buildEventCard(ev) {
   const card = document.createElement('a');
   card.className = 'event';
   card.href = `client.html?id=${encodeURIComponent(ev.id || '')}`;
+  card.dataset.id = ev.id || '';
 
   const date = document.createElement('div');
   date.className = 'event-date';
@@ -431,8 +433,10 @@ function renderTimeline() {
   }
 
   const cards = events.map((ev) => buildEventCard(ev));
-  cards.forEach((c) => {
+  cardMap = new Map();
+  cards.forEach((c, i) => {
     c.style.visibility = 'hidden';
+    cardMap.set(events[i].id, c);
     track.appendChild(c);
   });
 
@@ -731,6 +735,213 @@ document.addEventListener('keydown', (e) => {
   e.preventDefault();
   applyZoom(next, timelineEl.clientWidth / 2, timelineEl.clientHeight / 2);
 });
+
+/* ---------------- 搜索：输入关键词，点结果平滑定位到卡片 ---------------- */
+
+const searchWrap = document.getElementById('search');
+const searchInput = document.getElementById('search-input');
+const searchClear = document.getElementById('search-clear');
+const searchResults = document.getElementById('search-results');
+
+const SEARCH_LIMIT = 8;
+let searchHits = [];
+let searchActive = -1;
+
+// 把一条数据里可搜索的文字拼成一个串，用于兜底匹配
+function searchText(ev) {
+  return [
+    ev.name, ...(ev.aliases || []), ev.developer, ev.base,
+    ev.anticheat, ev.description, ...(ev.features || []),
+    ev.platform, ev.license, ev.status
+  ].filter(Boolean).join(' ').toLowerCase();
+}
+
+// 打分：名称命中优先，其次别名、作者，最后是正文里的零散命中
+function scoreEvent(ev, q) {
+  const name = (ev.name || '').toLowerCase();
+  if (name === q) return 100;
+  if (name.startsWith(q)) return 90;
+  if (name.includes(q)) return 70;
+  if ((ev.aliases || []).some((a) => a.toLowerCase().includes(q))) return 60;
+  if ((ev.developer || '').toLowerCase().includes(q)) return 50;
+  if (searchText(ev).includes(q)) return 30;
+  return 0;
+}
+
+// 把命中的片段包进 <mark>，让结果里一眼看到匹配位置
+function highlightMatch(text, q) {
+  const frag = document.createDocumentFragment();
+  const i = text.toLowerCase().indexOf(q);
+  if (i < 0) {
+    frag.appendChild(document.createTextNode(text));
+    return frag;
+  }
+  frag.appendChild(document.createTextNode(text.slice(0, i)));
+  const mark = document.createElement('mark');
+  mark.textContent = text.slice(i, i + q.length);
+  frag.appendChild(mark);
+  frag.appendChild(document.createTextNode(text.slice(i + q.length)));
+  return frag;
+}
+
+function openSearch() {
+  searchResults.hidden = false;
+  searchInput.setAttribute('aria-expanded', 'true');
+  // 靠近视口右边缘时改为右对齐，避免面板被裁掉
+  searchResults.style.left = '0';
+  searchResults.style.right = 'auto';
+  if (searchResults.getBoundingClientRect().right > window.innerWidth - 8) {
+    searchResults.style.left = 'auto';
+    searchResults.style.right = '0';
+  }
+}
+
+function closeSearch() {
+  searchResults.hidden = true;
+  searchInput.setAttribute('aria-expanded', 'false');
+  searchActive = -1;
+}
+
+function renderSearchResults(q) {
+  searchResults.innerHTML = '';
+  searchActive = -1;
+
+  if (!searchHits.length) {
+    const li = document.createElement('li');
+    li.className = 'search-empty';
+    li.textContent = `没有找到「${q}」`;
+    searchResults.appendChild(li);
+    openSearch();
+    return;
+  }
+
+  searchHits.forEach((ev, i) => {
+    const li = document.createElement('li');
+    li.className = 'search-item';
+    li.setAttribute('role', 'option');
+
+    const name = document.createElement('span');
+    name.className = 'search-name';
+    name.appendChild(highlightMatch(ev.name || '未命名', q.toLowerCase()));
+    li.appendChild(name);
+
+    const meta = document.createElement('span');
+    meta.className = 'search-meta';
+    const bits = [monthYearLabel(ev.__monthRaw, ev.year)];
+    if (ev.developer) bits.push(ev.developer);
+    meta.textContent = bits.join(' · ');
+    li.appendChild(meta);
+
+    // 按下时阻止默认行为，否则输入框先失焦，下拉会在 click 之前就被收起来
+    li.addEventListener('pointerdown', (e) => e.preventDefault());
+    li.addEventListener('click', () => choose(i));
+    searchResults.appendChild(li);
+  });
+
+  openSearch();
+}
+
+// 把某张卡片滚到视口中央
+function scrollToCard(card) {
+  // offsetLeft / offsetTop 是画布内的布局坐标（不受祖先 zoom 放大），
+  // 而 scrollLeft / scrollTop 是缩放后的视觉像素，所以要乘 zoom 换算
+  const cx = card.offsetLeft + card.offsetWidth / 2;
+  const cy = card.offsetTop + card.offsetHeight / 2;
+  const left = Math.max(0, cx * zoom - timelineEl.clientWidth / 2);
+  const top = Math.max(0, cy * zoom - timelineEl.clientHeight / 2);
+
+  // 尊重系统的"减少动态效果"设置
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    setScroll({ left, top });
+    return;
+  }
+  timelineEl.scrollTo({ left, top, behavior: 'smooth' });
+}
+
+function choose(index) {
+  const ev = searchHits[index];
+  if (!ev) return;
+
+  closeSearch();
+  searchInput.blur();
+
+  const card = cardMap.get(ev.id);
+  if (!card) return;
+
+  scrollToCard(card);
+
+  // 重启动画：先摘掉类再强制重排，否则连续搜同一张卡片时不会重新闪
+  card.classList.remove('is-found');
+  void card.offsetWidth;
+  card.classList.add('is-found');
+  clearTimeout(card.__foundTimer);
+  card.__foundTimer = setTimeout(() => card.classList.remove('is-found'), 2200);
+}
+
+function updateSearch() {
+  const raw = searchInput.value.trim();
+  searchClear.hidden = !raw;
+
+  if (!raw) {
+    searchHits = [];
+    closeSearch();
+    return;
+  }
+
+  const q = raw.toLowerCase();
+  searchHits = events
+    .map((ev) => ({ ev, score: scoreEvent(ev, q) }))
+    .filter((x) => x.score > 0)
+    .sort((a, b) => b.score - a.score
+      || b.ev.year - a.ev.year
+      || b.ev.__monthNum - a.ev.__monthNum)
+    .slice(0, SEARCH_LIMIT)
+    .map((x) => x.ev);
+
+  renderSearchResults(raw);
+}
+
+searchInput.addEventListener('input', updateSearch);
+
+// 重新聚焦时把上次的结果恢复出来
+searchInput.addEventListener('focus', () => {
+  if (searchInput.value.trim()) updateSearch();
+});
+
+searchInput.addEventListener('keydown', (e) => {
+  const items = Array.from(searchResults.querySelectorAll('.search-item'));
+
+  if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+    if (!items.length) return;
+    e.preventDefault();
+    const down = e.key === 'ArrowDown';
+    if (searchActive < 0) searchActive = down ? 0 : items.length - 1;
+    else searchActive = (searchActive + (down ? 1 : -1) + items.length) % items.length;
+    items.forEach((li, i) => li.classList.toggle('is-active', i === searchActive));
+    items[searchActive].scrollIntoView({ block: 'nearest' });
+  } else if (e.key === 'Enter') {
+    if (!searchHits.length) return;
+    e.preventDefault();
+    choose(searchActive >= 0 ? searchActive : 0);
+  } else if (e.key === 'Escape') {
+    e.preventDefault();
+    closeSearch();
+    searchInput.blur();
+  }
+});
+
+searchClear.addEventListener('click', () => {
+  searchInput.value = '';
+  searchClear.hidden = true;
+  searchHits = [];
+  closeSearch();
+  searchInput.focus();
+});
+
+// 点击搜索框以外的任何地方就收起结果
+document.addEventListener('pointerdown', (e) => {
+  if (!searchWrap.contains(e.target)) closeSearch();
+}, true);
 
 /* ---------------- 事件绑定 ---------------- */
 

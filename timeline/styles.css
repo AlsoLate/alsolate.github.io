@@ -309,6 +309,162 @@ select:focus-visible {
   background: var(--accent-glow);
 }
 
+/* ---------- 搜索框 ---------- */
+
+.search {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-icon {
+  position: absolute;
+  left: 10px;
+  width: 14px;
+  height: 14px;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.search-input {
+  width: 210px;
+  padding: 7px 30px;
+  background: var(--card-bg);
+  color: var(--text-main);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  transition: border-color 0.18s, box-shadow 0.18s;
+}
+
+.search-input::placeholder {
+  color: var(--text-muted);
+}
+
+.search-input:hover {
+  border-color: var(--guide-node);
+}
+
+.search-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+  outline: none;
+}
+
+.search-clear {
+  position: absolute;
+  right: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: 0.95rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.search-clear[hidden] {
+  display: none;
+}
+
+.search-clear:hover {
+  background: var(--accent-glow);
+  color: var(--text-main);
+}
+
+.search-results {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 300;
+  width: 300px;
+  max-height: min(340px, 60vh);
+  overflow-y: auto;
+  margin: 0;
+  padding: 4px;
+  list-style: none;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  box-shadow: var(--shadow-hover);
+  /* 深色主题的 --card-bg 是半透明的，浮层里会透出底下的卡片，加毛玻璃挡一下 */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  scrollbar-width: thin;
+  scrollbar-color: var(--guide-line) transparent;
+}
+
+/* 结果多时用细滚动条，别让默认粗条破坏卡片观感 */
+.search-results::-webkit-scrollbar {
+  width: 6px;
+}
+
+.search-results::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.search-results::-webkit-scrollbar-thumb {
+  background: var(--guide-line);
+  border-radius: 3px;
+}
+
+.search-results[hidden] {
+  display: none;
+}
+
+.search-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 7px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.12s;
+}
+
+.search-item:hover,
+.search-item.is-active {
+  background: var(--accent-glow);
+}
+
+.search-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.search-name mark {
+  background: var(--accent-glow);
+  border-radius: 2px;
+  color: inherit;
+  font-weight: 700;
+}
+
+.search-meta {
+  overflow: hidden;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.search-empty {
+  padding: 10px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+
 /* ==================== 时间线画布 ==================== */
 
 main {
@@ -449,6 +605,22 @@ main {
   box-shadow: var(--shadow-hover);
   outline: none;
   z-index: 3;
+}
+
+/* 搜索结果定位到的卡片：用光晕脉冲提示一下，不改 transform 以免和 hover 打架 */
+@keyframes found-flash {
+  0%, 100% {
+    box-shadow: 0 0 0 0 var(--accent-glow), var(--shadow);
+  }
+  40% {
+    box-shadow: 0 0 0 7px var(--accent-glow), var(--shadow-hover);
+  }
+}
+
+.event.is-found {
+  border-color: var(--accent);
+  animation: found-flash 0.9s ease-out 2;
+  z-index: 4;
 }
 
 .event-date {
@@ -638,8 +810,25 @@ main {
     flex: 0 0 auto;
   }
 
-  .dd {
+  /* 搜索框独占一行，避免和下拉挤在一起 */
+  .search {
+    flex: 1 1 100%;
     width: 100%;
+  }
+
+  .search-input {
+    width: 100%;
+  }
+
+  .search-results {
+    width: 100%;
+  }
+
+  /* 让下拉吃掉 label 之外的剩余空间，否则会顶出右边界 */
+  .dd {
+    flex: 1 1 auto;
+    width: auto;
+    min-width: 0;
   }
 
   .dd-trigger {
