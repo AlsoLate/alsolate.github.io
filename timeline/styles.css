@@ -134,6 +134,16 @@ body {
   flex-wrap: wrap;
   gap: 16px 28px;
   z-index: 100;
+  /* 页头是一排操作控件，不是阅读区：拖动时不该把「视图」「主题」这些标签选中 */
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* 搜索框例外——里面的文字要能选中、能改写 */
+.site-header input,
+.site-header textarea {
+  -webkit-user-select: text;
+  user-select: text;
 }
 
 .site-title {

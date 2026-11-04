@@ -126,6 +126,30 @@ function enhanceSelect(sel) {
   return { sync };
 }
 
+/* ---------------- 页头禁止拖选 ---------------- */
+
+/**
+ * 页头是一排操作控件，不是阅读区：在标签或按钮上按下拖动时不该选中文字。
+ * CSS 的 user-select: none 已经挡掉大部分情况，这里再加一道兜底
+ * （部分浏览器从不可选区域起拖仍会扩出选区）。
+ * 搜索框（input / textarea）保持正常的文字选择与编辑。
+ */
+function lockHeaderSelection() {
+  document.querySelectorAll('.site-header').forEach((header) => {
+    header.addEventListener('selectstart', (e) => {
+      const t = e.target;
+      if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA')) return;
+      e.preventDefault();
+    });
+  });
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', lockHeaderSelection);
+} else {
+  lockHeaderSelection();
+}
+
 /* ---------------- 缩放控件（两个页面共用） ---------------- */
 
 /**
